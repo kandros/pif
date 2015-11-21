@@ -2,7 +2,7 @@
 #!/bin/bash
 # Argument = -t test -r server -p password -v
 
-usage() {
+printUsage() {
 cat << EOF
 usage for $0
 
@@ -17,6 +17,23 @@ OPTIONS:
 EOF
 }
 
+getRawGithubUrl() {
+  if [[ $(pbpaste) ]] && [[ $(pbpaste) = *"github.com"* ]]; then
+    if [[ $(pbpaste) != *"raw."* ]]; then
+      original_url=$(pbpaste)
+      raw_url="${original_url/github.com/raw.githubusercontent.com}"
+      final_url="${raw_url/\/blob\///}"
+      echo $final_url
+    else
+      echo $(pbpaste)
+    fi
+  else
+    echo "not a github file link"
+  fi
+}
+
+
+
 
 while [[ $# -gt 0 ]] && [[ ."$1" = .-* ]] ;
 do
@@ -24,10 +41,20 @@ do
     shift;
     case "$opt" in
         "-h" | "--help" )
-           usage;
+           printUsage;
+           exit 0;;
+        "-g" | "--github" )
+           url=$(getRawGithubUrl);
+           if [[ -z $1 ]]; then
+             filename=$(basename $url)
+             curl $url -o $filename
+           else
+             curl $url -o $1
+           fi
            exit 0;;
         "-v" | "--vim"  )
-           pbpaste | vim -;;
+           pbpaste | vim -;
+           exit 0;;
         "-e" | "--editor")
            if [[ -z $EDITOR ]] ; then
              echo "EDITOR env variable not set"
@@ -41,16 +68,3 @@ do
         "-"*) echo >&2 "Invalid option: use $0 -h for a list of possible options"; exit 1;;
    esac
 done
-
-if [[ $(pbpaste) ]] && [[ $(pbpaste) = *"github"* ]]; then
-  if [[ $(pbpaste) = *"raw."* ]]; then
-    echo "raw"
-  else
-    original_url=$(pbpaste)
-    raw_url="${original_url/github.com/raw.githubusercontent.com}"
-    final_url="${raw_url/\/blob\///}"
-    echo $(curl $final_url) > $1
-  fi
-elif [[ $1 ]] ; then
-  pbpaste > $1
-fi
