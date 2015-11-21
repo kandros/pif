@@ -23,12 +23,12 @@ do
     opt="$1";
     shift;
     case "$opt" in
-        "-h" )
+        "-h" | "--help" )
            usage;
            exit 0;;
-        "-v" )
+        "-v" | "--vim"  )
            pbpaste | vim -;;
-        "-e" )
+        "-e" | "--editor")
            if [[ -z $EDITOR ]] ; then
              echo "EDITOR env variable not set"
            elif [[ $EDITOR = "vim" ]] || [ $EDITOR = "vi" ]]; then
