@@ -1,6 +1,6 @@
 ## This is Pif, P(aste)I(n)F(ile).
 
-A little utility to allow a fast way to paste content from clipboard to a file or editor.
+A small terminal utility to allow a fast way to paste content from clipboard to a file or editor.
 
 ## install
 - add the folder containing pif.sh to your path
