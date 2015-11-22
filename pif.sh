@@ -19,8 +19,8 @@ EOF
 }
 
 getRawGithubUrl() {
-    if [[ $(pbpaste) != *"raw."* ]]; then
-      original_url=$(pbpaste)
+    if [[ $CLIPCONTENT != *"raw."* ]]; then
+      original_url=$CLIPCONTENT
       raw_url="${original_url/github.com/raw.githubusercontent.com}"
       final_url="${raw_url/\/blob\///}"
       echo $final_url
@@ -29,6 +29,8 @@ getRawGithubUrl() {
     fi
 
 }
+
+CLIPCONTENT=$(pbpaste)
 
 while [[ $# -gt 0 ]] && [[ ."$1" = .-* ]] ;
 do
@@ -39,7 +41,7 @@ do
            printUsage;
            exit 0;;
         "-g" | "--github" )
-            if [[ $(pbpaste) ]] && [[ $(pbpaste) = *"github.com"* ]]; then
+            if [[ $CLIPCONTENT ]] && [[ $CLIPCONTENT = *"github"* ]]; then
               url=$(getRawGithubUrl);
                if [[ -z $1 ]]; then
                  filename=$(basename $url)
