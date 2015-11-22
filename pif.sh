@@ -9,16 +9,16 @@ usage for $0
 This script uses the clipboard content and pipes it into different outputs.
 
 OPTIONS:
-   -p      prepend clipboard content to supplied file
-   -a      append clipboard content to supplied file
-   -h      Show this message
-   -v      opens the clipboard inside vim
-   -e      tries to open the clipboard content with $EDITOR
+   [ filename ] paste clipboard content in a new file called as the name passed
+   [ -h ] [ --help ]        Show this message
+   [ -v ] [ --vim ]         open inside vim buffer
+   [ -e ] [ --editor ]      open inside your default env EDITOR
+   [ -g ] [ --github ] [ filename ] if clipboard content is a github file url (copy link adreess from right click menu is a great example) download preserving the name.
+   If a parameter is specified, thi will be used as the filename insted.
 EOF
 }
 
 getRawGithubUrl() {
-  if [[ $(pbpaste) ]] && [[ $(pbpaste) = *"github.com"* ]]; then
     if [[ $(pbpaste) != *"raw."* ]]; then
       original_url=$(pbpaste)
       raw_url="${original_url/github.com/raw.githubusercontent.com}"
@@ -27,13 +27,8 @@ getRawGithubUrl() {
     else
       echo $(pbpaste)
     fi
-  else
-    echo "not a github file link"
-  fi
+
 }
-
-
-
 
 while [[ $# -gt 0 ]] && [[ ."$1" = .-* ]] ;
 do
@@ -44,14 +39,18 @@ do
            printUsage;
            exit 0;;
         "-g" | "--github" )
-           url=$(getRawGithubUrl);
-           if [[ -z $1 ]]; then
-             filename=$(basename $url)
-             curl $url -o $filename
+            if [[ $(pbpaste) ]] && [[ $(pbpaste) = *"github.com"* ]]; then
+              url=$(getRawGithubUrl);
+               if [[ -z $1 ]]; then
+                 filename=$(basename $url)
+                 curl $url -o $filename
+               else
+                 curl $url -o $1
+               fi
            else
-             curl $url -o $1
+             echo "not a github file link"
            fi
-           exit 0;;
+           exit;;
         "-v" | "--vim"  )
            pbpaste | vim -;
            exit 0;;
@@ -68,3 +67,11 @@ do
         "-"*) echo >&2 "Invalid option: use $0 -h for a list of possible options"; exit 1;;
    esac
 done
+
+if [[ $1 ]]; then
+  pbpaste > $1
+  exit 0
+else
+  printUsage
+  exit 0
+fi
