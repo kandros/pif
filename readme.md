@@ -5,7 +5,8 @@ A small terminal utility to allow a fast way to paste content from clipboard to 
 ## install
 - add the folder containing pif.sh to your path
 
-#### copy form clipboard
+## Features
+#### copy from clipboard
 ![copy to file](https://cloud.githubusercontent.com/assets/4562878/11323252/28ee530a-910e-11e5-808f-b0796d0faa11.gif)
 
 #### copy from github url
